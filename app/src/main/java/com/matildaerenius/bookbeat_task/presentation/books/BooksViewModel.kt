@@ -16,15 +16,41 @@ class BooksViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<List<Book>>>(UiState.Loading)
     val uiState: StateFlow<UiState<List<Book>>> = _uiState.asStateFlow()
+    private val allBooks = mutableListOf<Book>()
+    private var currentPage = 1
+    private var currentCategoryUrl = ""
 
     fun fetchBooks(url: String) {
+        currentCategoryUrl = url
+        currentPage = 1
+        allBooks.clear()
+        loadData()
+    }
+    fun loadMoreBooks() {
+        currentPage += 1
+        loadData()
+    }
+
+    private fun loadData() {
         viewModelScope.launch {
-            _uiState.value = UiState.Loading
+            if (allBooks.isEmpty()) {
+                _uiState.value = UiState.Loading
+            }
+
             try {
-                val books = repository.getBooks(url)
-                _uiState.value = UiState.Success(books)
+                val separator = if (currentCategoryUrl.contains("?")) "&" else "?"
+                val paginatedUrl = "${currentCategoryUrl}${separator}page=$currentPage"
+
+                val newBooks = repository.getBooks(paginatedUrl)
+
+                allBooks.addAll(newBooks)
+
+                _uiState.value = UiState.Success(allBooks.toList())
+
             } catch (e: Exception) {
-                _uiState.value = UiState.Error(e.message ?: "Kunde inte hämta böcker")
+                if (allBooks.isEmpty()) {
+                    _uiState.value = UiState.Error(e.message ?: "Kunde inte hämta böcker")
+                }
             }
         }
     }
