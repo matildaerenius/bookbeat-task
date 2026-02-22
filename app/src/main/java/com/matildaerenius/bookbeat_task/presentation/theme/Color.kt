@@ -1,4 +1,4 @@
-package com.matildaerenius.bookbeat_task.ui.theme
+package com.matildaerenius.bookbeat_task.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
