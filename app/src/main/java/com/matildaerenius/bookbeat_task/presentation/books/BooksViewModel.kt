@@ -38,8 +38,8 @@ class BooksViewModel : ViewModel() {
             }
 
             try {
-                val separator = if (currentCategoryUrl.contains("?")) "&" else "?"
-                val paginatedUrl = "${currentCategoryUrl}${separator}page=$currentPage"
+                val currentOffset = (currentPage - 1) * 50
+                val paginatedUrl = currentCategoryUrl.replace("offset=0", "offset=$currentOffset")
 
                 val newBooks = repository.getBooks(paginatedUrl)
 
