@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.matildaerenius.bookbeat_task.presentation.components.BookCard
+import com.matildaerenius.bookbeat_task.presentation.components.ErrorStateView
 import com.matildaerenius.bookbeat_task.presentation.state.UiState
 
 @Composable
@@ -30,30 +31,37 @@ fun BookListScreen(
         viewModel.fetchBooks(booksUrl)
     }
 
-        Box(modifier = Modifier.fillMaxSize()) {
-            when (val state = uiState) {
-                is UiState.Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
-                is UiState.Error -> Text("Fel: ${state.message}", Modifier.align(Alignment.Center))
-                is UiState.Success ->
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        when (val state = uiState) {
+            is UiState.Loading -> {
+                CircularProgressIndicator(Modifier.align(Alignment.Center))
+            }
 
-                        items(state.data) { book ->
-                            BookCard(book = book)
-                        }
+            is UiState.Error -> {
+                ErrorStateView(errorMessage = state.message)
+            }
 
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 24.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Button(onClick = { viewModel.loadMoreBooks() }) {
-                                    Text("Visa fler böcker")
-                                }
+            is UiState.Success -> {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+
+                    items(state.data) { book ->
+                        BookCard(book = book)
+                    }
+
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 24.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Button(onClick = { viewModel.loadMoreBooks() }) {
+                                Text("Visa fler böcker")
                             }
                         }
                     }
+                }
             }
         }
     }
+}

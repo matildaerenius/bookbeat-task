@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 
 class BooksViewModel : ViewModel() {
 
@@ -24,11 +26,13 @@ class BooksViewModel : ViewModel() {
         allBooks.clear()
         loadData()
     }
+
     fun loadMoreBooks() {
         if (nextUrl != null) {
             loadData()
         }
     }
+
     private fun loadData() {
         viewModelScope.launch {
             if (allBooks.isEmpty()) {
@@ -44,9 +48,19 @@ class BooksViewModel : ViewModel() {
 
                 _uiState.value = UiState.Success(allBooks.toList())
 
+            } catch (e: IOException) {
+                if (allBooks.isEmpty()) {
+                    _uiState.value =
+                        UiState.Error("Inget internet. Kolla ditt nätverk och försök igen.")
+                }
+            } catch (e: HttpException) {
+                if (allBooks.isEmpty()) {
+                    _uiState.value =
+                        UiState.Error("Ett fel uppstod på servern. Försök igen senare.")
+                }
             } catch (e: Exception) {
                 if (allBooks.isEmpty()) {
-                    _uiState.value = UiState.Error(e.message ?: "Kunde inte hämta böcker")
+                    _uiState.value = UiState.Error("Ett oväntat fel uppstod. Försök igen.")
                 }
             }
         }

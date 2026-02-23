@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 
 class CategoryViewModel : ViewModel() {
 
@@ -27,8 +29,13 @@ class CategoryViewModel : ViewModel() {
             try {
                 val categories = repository.getCategories()
                 _uiState.value = UiState.Success(categories)
+            } catch (e: IOException) {
+                _uiState.value =
+                    UiState.Error("Inget interner. Kolla ditt nätverk och försök igen.")
+            } catch (e: HttpException) {
+                _uiState.value = UiState.Error("Ett fel uppstod på servern. Försök igen senare.")
             } catch (e: Exception) {
-                _uiState.value = UiState.Error(e.message ?: "Ett oväntat fel uppstod")
+                _uiState.value = UiState.Error("Ett oväntat fel uppstod. Försök igen.")
             }
         }
     }
