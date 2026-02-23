@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.matildaerenius.bookbeat_task.domain.model.Book
 import com.matildaerenius.bookbeat_task.presentation.components.BookCard
 import com.matildaerenius.bookbeat_task.presentation.components.ErrorStateView
 import com.matildaerenius.bookbeat_task.presentation.state.UiState
@@ -42,24 +43,34 @@ fun BookListScreen(
             }
 
             is UiState.Success -> {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                BookListContent(
+                    books = state.data,
+                    onLoadMoreClick = { viewModel.loadMoreBooks() }
+                )
+            }
+        }
+    }
+}
 
-                    items(state.data) { book ->
-                        BookCard(book = book)
-                    }
+@Composable
+private fun BookListContent(
+    books: List<Book>,
+    onLoadMoreClick: () -> Unit
+) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        items(books) { book ->
+            BookCard(book = book)
+        }
 
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 24.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Button(onClick = { viewModel.loadMoreBooks() }) {
-                                Text("Visa fler böcker")
-                            }
-                        }
-                    }
+        item {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Button(onClick = onLoadMoreClick) {
+                    Text("Visa fler böcker")
                 }
             }
         }

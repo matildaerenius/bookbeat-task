@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.matildaerenius.bookbeat_task.domain.model.Category
 import com.matildaerenius.bookbeat_task.presentation.components.CategoryCard
 import com.matildaerenius.bookbeat_task.presentation.components.ErrorStateView
 import com.matildaerenius.bookbeat_task.presentation.state.UiState
@@ -36,23 +37,35 @@ fun CategoryListScreen(
             }
 
             is UiState.Success -> {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(state.data) { category ->
-                        CategoryCard(
-                            category = category,
-                            onCategoryClick = {
-                                category.booksUrl?.let { url -> onCategoryClick(url) }
-                            }
-                        )
-                    }
-                }
+                CategoryListContent(
+                    categories = state.data,
+                    onCategoryClick = onCategoryClick
+                )
             }
+        }
+    }
+}
+
+// Ska man ha en separata composable? eller är det överdrivet?
+@Composable
+private fun CategoryListContent(
+    categories: List<Category>,
+    onCategoryClick: (String) -> Unit
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(categories) { category ->
+            CategoryCard(
+                category = category,
+                onCategoryClick = {
+                    category.booksUrl?.let { url -> onCategoryClick(url) }
+                }
+            )
         }
     }
 }
