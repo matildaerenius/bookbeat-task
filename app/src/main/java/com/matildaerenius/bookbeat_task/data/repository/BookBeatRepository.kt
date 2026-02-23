@@ -2,7 +2,7 @@ package com.matildaerenius.bookbeat_task.data.repository
 
 import com.matildaerenius.bookbeat_task.data.api.RetrofitClient
 import com.matildaerenius.bookbeat_task.data.mapper.toDomain
-import com.matildaerenius.bookbeat_task.domain.model.Book
+import com.matildaerenius.bookbeat_task.domain.model.BookPage
 import com.matildaerenius.bookbeat_task.domain.model.Category
 
 class BookBeatRepository {
@@ -14,8 +14,12 @@ class BookBeatRepository {
         return response.embedded.categories.map { it.toDomain() }
     }
 
-    suspend fun getBooks(url: String): List<Book> {
+    suspend fun getBooks(url: String): BookPage {
         val response = api.getBooks(url)
-        return response.embedded.books.map { it.toDomain() }
+        val mappedBooks = response.embedded.books.map { it.toDomain() }
+        return BookPage(
+            books = mappedBooks,
+            nextUrl = response.links?.next?.href
+        )
     }
 }

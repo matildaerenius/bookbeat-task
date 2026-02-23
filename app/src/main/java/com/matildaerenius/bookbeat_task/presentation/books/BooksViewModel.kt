@@ -17,20 +17,18 @@ class BooksViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<UiState<List<Book>>>(UiState.Loading)
     val uiState: StateFlow<UiState<List<Book>>> = _uiState.asStateFlow()
     private val allBooks = mutableListOf<Book>()
-    private var currentPage = 1
-    private var currentCategoryUrl = ""
+    private var nextUrl: String? = null
 
     fun fetchBooks(url: String) {
-        currentCategoryUrl = url
-        currentPage = 1
+        nextUrl = url
         allBooks.clear()
         loadData()
     }
     fun loadMoreBooks() {
-        currentPage += 1
-        loadData()
+        if (nextUrl != null) {
+            loadData()
+        }
     }
-
     private fun loadData() {
         viewModelScope.launch {
             if (allBooks.isEmpty()) {
@@ -38,12 +36,11 @@ class BooksViewModel : ViewModel() {
             }
 
             try {
-                val currentOffset = (currentPage - 1) * 50
-                val paginatedUrl = currentCategoryUrl.replace("offset=0", "offset=$currentOffset")
 
-                val newBooks = repository.getBooks(paginatedUrl)
+                val bookPage = repository.getBooks(nextUrl!!)
 
-                allBooks.addAll(newBooks)
+                allBooks.addAll(bookPage.books)
+                nextUrl = bookPage.nextUrl
 
                 _uiState.value = UiState.Success(allBooks.toList())
 
