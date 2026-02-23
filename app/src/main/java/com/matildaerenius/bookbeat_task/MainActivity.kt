@@ -5,19 +5,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import com.matildaerenius.bookbeat_task.presentation.books.BookListScreen
 import com.matildaerenius.bookbeat_task.presentation.books.BooksViewModel
 import com.matildaerenius.bookbeat_task.presentation.categories.CategoryListScreen
 import com.matildaerenius.bookbeat_task.presentation.categories.CategoryViewModel
-import com.matildaerenius.bookbeat_task.presentation.navigation.Routes
+import com.matildaerenius.bookbeat_task.presentation.navigation.BookListRoute
+import com.matildaerenius.bookbeat_task.presentation.navigation.CategoryListRoute
 import com.matildaerenius.bookbeat_task.presentation.theme.BookbeattaskTheme
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,29 +27,25 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = Routes.CATEGORIES
+                    startDestination = CategoryListRoute
                 ) {
-                    composable(Routes.CATEGORIES) {
+                    composable<CategoryListRoute> {
                         val categoryViewModel: CategoryViewModel = viewModel()
                         CategoryListScreen(
                             viewModel = categoryViewModel,
                             onCategoryClick = { url ->
-                                val encodedUrl = URLEncoder.encode(url, StandardCharsets.UTF_8.toString())
-                                navController.navigate("books/$encodedUrl")
+                                navController.navigate(BookListRoute(url = url))
                             }
                         )
                     }
 
-                    composable(
-                        route = Routes.BOOKS,
-                        arguments = listOf(navArgument("url") { type = NavType.StringType })
-                    ) { backStackEntry ->
-                        val booksUrl = backStackEntry.arguments?.getString("url") ?: ""
+                    composable<BookListRoute> { backStackEntry ->
+                        val route = backStackEntry.toRoute<BookListRoute>()
                         val booksViewModel: BooksViewModel = viewModel()
 
                         BookListScreen(
                             viewModel = booksViewModel,
-                            booksUrl = booksUrl,
+                            booksUrl = route.url,
                         )
                     }
                 }
