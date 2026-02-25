@@ -6,9 +6,9 @@ import com.matildaerenius.bookbeat_task.domain.model.Book
 fun BookDto.toDomain(): Book {
     return Book(
         id = this.id,
-        title = this.title,
+        title = this.title ?: "Okänd titel",
         imageUrl = this.image,
-        author = this.author,
+        author = this.author ?: "Okänd författare",
         isEbook = this.ebook == true,
         isAudiobook = this.audio == true
     )

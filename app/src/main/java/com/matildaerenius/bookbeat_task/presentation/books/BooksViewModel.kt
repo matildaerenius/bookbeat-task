@@ -1,5 +1,6 @@
 package com.matildaerenius.bookbeat_task.presentation.books
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.matildaerenius.bookbeat_task.data.repository.BookBeatRepository
@@ -50,17 +51,20 @@ class BooksViewModel : ViewModel() {
 
             } catch (e: IOException) {
                 if (allBooks.isEmpty()) {
+                    Log.e("BookViewModel", "Krasch vid hämtning av böcker", e)
                     _uiState.value =
                         UiState.Error("Inget internet. Kolla ditt nätverk och försök igen.")
                 }
             } catch (e: HttpException) {
                 if (allBooks.isEmpty()) {
+                    Log.e("BookViewModel", "Krasch vid hämtning av böcker", e)
                     _uiState.value =
                         UiState.Error("Ett fel uppstod på servern. Försök igen senare.")
                 }
             } catch (e: Exception) {
                 if (allBooks.isEmpty()) {
-                    _uiState.value = UiState.Error("Ett oväntat fel uppstod. Försök igen.")
+                    Log.e("BookViewModel", "Krasch vid hämtning av böcker", e)
+                    _uiState.value = UiState.Error("Hoppsan hejsan, ett oväntat fel uppstod. Försök igen.")
                 }
             }
         }

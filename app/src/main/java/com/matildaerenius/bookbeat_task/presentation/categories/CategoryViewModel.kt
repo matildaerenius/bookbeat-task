@@ -1,5 +1,6 @@
 package com.matildaerenius.bookbeat_task.presentation.categories
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.matildaerenius.bookbeat_task.data.repository.BookBeatRepository
@@ -30,11 +31,14 @@ class CategoryViewModel : ViewModel() {
                 val categories = repository.getCategories()
                 _uiState.value = UiState.Success(categories)
             } catch (e: IOException) {
+                Log.e("CategoryViewModel", "Krasch vid hämtning av kategori", e)
                 _uiState.value =
-                    UiState.Error("Inget interner. Kolla ditt nätverk och försök igen.")
+                    UiState.Error("Inget internet. Kolla ditt nätverk och försök igen.")
             } catch (e: HttpException) {
+                Log.e("CategoryViewModel", "Krasch vid hämtning av kategori", e)
                 _uiState.value = UiState.Error("Ett fel uppstod på servern. Försök igen senare.")
             } catch (e: Exception) {
+                Log.e("CategoryViewModel", "Krasch vid hämtning av kategori", e)
                 _uiState.value = UiState.Error("Ett oväntat fel uppstod. Försök igen.")
             }
         }
