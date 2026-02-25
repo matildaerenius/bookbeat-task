@@ -3,8 +3,9 @@ package com.matildaerenius.bookbeat_task.presentation.books
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.matildaerenius.bookbeat_task.data.repository.BookBeatRepository
+import com.matildaerenius.bookbeat_task.data.repository.BookBeatRepositoryImpl
 import com.matildaerenius.bookbeat_task.domain.model.Book
+import com.matildaerenius.bookbeat_task.domain.repository.BookBeatRepository
 import com.matildaerenius.bookbeat_task.presentation.state.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,7 @@ import java.io.IOException
 
 class BooksViewModel : ViewModel() {
 
-    private val repository = BookBeatRepository()
+    private val repository: BookBeatRepository = BookBeatRepositoryImpl()
 
     private val _uiState = MutableStateFlow<UiState<List<Book>>>(UiState.Loading)
     val uiState: StateFlow<UiState<List<Book>>> = _uiState.asStateFlow()
