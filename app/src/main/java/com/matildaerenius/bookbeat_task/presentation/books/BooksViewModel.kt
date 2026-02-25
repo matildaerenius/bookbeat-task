@@ -31,6 +31,8 @@ class BooksViewModel : ViewModel() {
     fun loadMoreBooks() {
         if (nextUrl != null) {
             loadData()
+        } else {
+            Log.d("BooksViewModel", "Botten nådd, inga fler böcker att ladda")
         }
     }
 

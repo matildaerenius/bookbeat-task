@@ -9,7 +9,7 @@ fun BookDto.toDomain(): Book {
         title = this.title ?: "Okänd titel",
         imageUrl = this.image,
         author = this.author ?: "Okänd författare",
-        isEbook = this.ebook == true,
-        isAudiobook = this.audio == true
+        isEbook = this.ebook ?: false,
+        isAudiobook = this.audio ?: false
     )
 }

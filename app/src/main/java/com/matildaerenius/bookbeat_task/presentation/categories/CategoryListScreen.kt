@@ -63,7 +63,9 @@ private fun CategoryListContent(
             CategoryCard(
                 category = category,
                 onCategoryClick = {
-                    category.booksUrl?.let { url -> onCategoryClick(url) }
+                    if (category.booksUrl != null) {
+                        onCategoryClick(category.booksUrl)
+                    }
                 }
             )
         }
